@@ -1,0 +1,98 @@
+#include <iostream>
+#include <string>
+
+struct Node {
+  Node(char l, Node* p = nullptr, Node* lc = nullptr, Node* rc = nullptr) : letter(l), parent(p), left(lc), right(rc) {}
+	Node* left; 
+  Node* right; 
+  Node* parent;
+  char letter;
+};
+
+//returns a pointer to the Node that contains element, or nullptr if the element is not in the tree
+Node* find(char element, Node* headPtr) const {
+  if (headPtr->letter == element){
+   return headPtr; 
+  }
+  Node* leftAns = (headPtr->left == nullptr ? nullptr : find(element, headPtr->left)) != nullptr);
+  Node* rightAns = (headPtr->right == nullptr ? nullptr : find(element, headPtr->right)) != nullptr);
+  return (leftAns == nullptr ? rightAns : leftAns);
+}
+
+//returns true if making element a child of parent would cause cycling
+bool cycles(char element, Node* parent) const {
+ 	if (parent->parent == nullptr) return false;
+	if (parent->parent->element == element) return true;
+  else return cycles(element, parent->parent);
+}
+
+void printTree(Node* headPtr) const {
+ 	std::cout << "(" << headPtr->element;
+  if (headPtr->left != nullptr) printTree(headPtr->left);
+  if (headPtr->right != nullptr){
+    std::cout << " ";
+    printTree(headPtr->right);
+  }
+  std::cout << ")";
+}
+//E1: invalid input
+//E2: duplicates
+//E3: multiple roots 
+//E4: too many kids  
+//E5: cycling 
+void treefy(std::string input, std::vector<Node*> tree) {
+	char parent = input[1]; 
+  char child = input[3]; 
+ 	Node* parentPos; 
+  Node* childPos;
+
+  for(size_t i = 0; i < tree.size(); i++) {
+    if (parentPos == nullptr)
+      parentPos = find(parent, tree[i]); 
+    if (childPos == nullptr)
+     	childPos = find(parent, tree[i]); 
+  }
+  
+  if (parentPos == nullptr && childPos == nullptr) {
+    //put the parent as a potential new root in the vector
+  	Node* parentNode = new Node(parent, nullptr, new Node(child, parentNode));
+    tree.push_back(parentNode);    
+  }
+  
+  else if (parentPos != nullptr && childPos != nullptr) {
+    //error cuz it's a duplicate??? or other error idk
+    if(parentPos->left == childPos || parentPos->right == childPos) {
+     	std::cout << "E2" << endl; 
+    }
+    else {
+      std::cout << "E1" << endl; 
+    }
+  }
+  
+  else if (parentPos == nullptr && childPos != nullptr) {
+    	std::cout << "E1" << endl;
+  }
+  
+  else {
+    //theres an existing parent, put the child in 
+    if(parentPos->left != nullptr && parentPos->right != nullptr) {
+			//too many kids		
+    }
+    else if(parentPos->left != nullptr) {
+      	
+    }
+    else {
+      
+    }
+  }
+}
+
+int main() {
+  std::string input;
+	std::vector<Node*> binTree;
+  while(input << cin){
+  //input -> (A,B)
+    treefy(input, binTree); 
+  }
+  return 0;
+}
